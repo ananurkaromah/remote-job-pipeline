@@ -1,0 +1,48 @@
+# One country/region name per line, used to detect explicit country lists in
+# job descriptions (ADR-005 eligibility rule #3). Lowercase, no punctuation.
+united states
+usa
+us
+canada
+united kingdom
+uk
+ireland
+germany
+france
+spain
+italy
+netherlands
+poland
+portugal
+sweden
+switzerland
+austria
+belgium
+denmark
+norway
+finland
+australia
+new zealand
+japan
+south korea
+singapore
+malaysia
+philippines
+vietnam
+thailand
+india
+indonesia
+brazil
+mexico
+eu
+european union
+emea
+latam
+americas
+apac
+asia
+southeast asia
+asean
+worldwide
+anywhere
+global

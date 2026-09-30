@@ -1,0 +1,2 @@
+# Only needed if ENABLE_SELENIUM_SOURCES=true (ADR-022). Not installed by default.
+selenium>=4.20

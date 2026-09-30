@@ -1,0 +1,51 @@
+positive_phrases:
+  - "worldwide"
+  - "work from anywhere"
+  - "remote anywhere"
+  - "anywhere in the world"
+  - "global remote"
+  - "apac"
+  - "asia pacific"
+  - "southeast asia"
+  - "asean"
+  - "open to candidates in indonesia"
+  - "indonesia"
+  - "remote - global"
+  - "remote (global)"
+
+negative_phrases:
+  - "us only"
+  - "u.s. only"
+  - "usa only"
+  - "united states only"
+  - "must reside in the us"
+  - "must be based in the us"
+  - "must be authorized to work in the us"
+  - "authorized to work in the united states"
+  - "eu residents only"
+  - "must reside in the eu"
+  - "uk residents only"
+  - "must be based in the uk"
+  - "canada only"
+  - "this role is only open to"
+
+negation_guards:
+  - "not limited to"
+  - "not restricted to"
+  - "we are not able to hire in"
+  - "unable to hire in"
+
+soft_negative_phrases:
+  - "we do not sponsor visas"
+  - "no visa sponsorship"
+  - "must have existing work authorization"
+
+timezone_phrases:
+  - "overlap"
+  - "business hours"
+  - "core hours"
+  - "est"
+  - "pst"
+  - "cet"
+  - "gmt"
+  - "utc"

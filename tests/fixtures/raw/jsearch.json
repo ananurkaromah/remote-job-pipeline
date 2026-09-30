@@ -1,0 +1,11 @@
+{
+  "data": [
+    {
+      "job_id": "4001", "job_title": "Data Engineer", "employer_name": "Umbrella Data",
+      "job_description": "3+ years of experience with data pipelines required. US only.",
+      "job_apply_link": "https://umbrella.example.com/careers/4001",
+      "job_posted_at_datetime_utc": "2026-09-24T00:00:00",
+      "job_country": "US", "job_apply_is_direct": true, "job_publisher": "LinkedIn"
+    }
+  ]
+}

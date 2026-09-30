@@ -1,0 +1,5 @@
+requests>=2.31
+boto3>=1.34
+psycopg2-binary>=2.9
+sentence-transformers>=2.7
+PyYAML>=6.0

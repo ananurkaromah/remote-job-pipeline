@@ -1,0 +1,11 @@
+{
+  "jobs": [
+    {
+      "guid": "3001", "title": "ETL Developer", "companyName": "Initech",
+      "description": "2 years of experience with SQL and Python required. Remote, worldwide.",
+      "applicationLink": "https://himalayas.app/jobs/3001",
+      "pubDate": "2026-09-27T00:00:00",
+      "locationRestrictions": ["Worldwide"]
+    }
+  ]
+}

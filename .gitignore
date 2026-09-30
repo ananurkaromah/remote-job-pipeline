@@ -1,0 +1,85 @@
+# Local outputs
+lifecycle.json
+.DS_Store
+
+# Credentialsa and Token
+.env
+.env.*
+!.env.example
+*.json
+!tests/fixtures/**/*.json
+!resources/fx_rates.json
+*.pem
+sa-key.json
+gcp.json
+*credentials*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.ruff_cache/
+
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Direktori Pengujian & Cache Alat Pemrograman
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+/.tox/
+.nox/
+
+# Docker & Model Hugging Face Local
+.cache/
+.huggingface/
+
+
+# Local ops
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+desktop.ini
+
+# Editor & IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Local data / pipeline output
+data/
+output/
+logs/
+*.log
