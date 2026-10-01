@@ -64,7 +64,7 @@ def request_with_retry(
             raise ExtractionError(source, FailureReason.NETWORK, str(e)) from e
 
         if resp.status_code in (401, 403):
-            raise ExtractionError(source, FailureReason.AUTH, f"HTTP {resp.status_code}")
+            raise ExtractionError(source, FailureReason.AUTH, f"HTTP {resp.status_code}: {resp.text[:300]}")
         if resp.status_code == 429:
             raise ExtractionError(source, FailureReason.QUOTA, "HTTP 429 rate limited / quota exhausted")
         if resp.status_code in RETRYABLE_STATUS:
@@ -74,9 +74,9 @@ def request_with_retry(
             if attempt < max_retries:
                 time.sleep(2 ** attempt)
                 continue
-            raise ExtractionError(source, FailureReason.HTTP_STATUS, f"HTTP {resp.status_code} after retries")
+            raise ExtractionError(source, FailureReason.HTTP_STATUS, f"HTTP {resp.status_code} after retries: {resp.text[:300]}")
         if resp.status_code >= 400:
-            raise ExtractionError(source, FailureReason.HTTP_STATUS, f"HTTP {resp.status_code}")
+            raise ExtractionError(source, FailureReason.HTTP_STATUS, f"HTTP {resp.status_code}: {resp.text[:300]}")
 
         return resp
 

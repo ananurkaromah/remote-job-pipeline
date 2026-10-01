@@ -8,7 +8,7 @@ own PartialExtractionError to set the final SourceStatus.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 
 from rjp import config
 
@@ -33,7 +33,7 @@ class RunBudget:
     _used: int = 0
 
     def check_scheduled_today(self, now: datetime | None = None) -> None:
-        now = now or datetime.utcnow()
+        now = now or datetime.now(timezone.utc)
         today = now.strftime("%a").upper()
         if self.run_days and today not in self.run_days:
             raise QuotaSkip(f"not scheduled today ({today} not in {self.run_days})")

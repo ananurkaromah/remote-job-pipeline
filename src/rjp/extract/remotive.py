@@ -1,20 +1,26 @@
-"""Remotive public API extractor. No API key required."""
+"""Remotive public API extractor. No API key required.
+
+NOTE (fixed after live testing): the `search` query parameter did not
+filter results as expected (unrelated titles were returned first). We
+request the software-dev category, which reliably contains Data
+Engineer/ETL postings, and let transform/role_filter.py make the actual
+relevance decision rather than pre-filtering on a narrow title substring.
+"""
 from __future__ import annotations
 
 from rjp.exceptions import ExtractionError, FailureReason
 from rjp.extract.base import BaseExtractor
-from rjp.utils.http import random_delay, request_with_retry, require_keys
+from rjp.utils.http import random_delay, require_keys, request_with_retry
 
 API_URL = "https://remotive.com/api/remote-jobs"
 CATEGORY = "software-dev"
-SEARCH_TERMS = ("data engineer", "etl")
 
 
 class RemotiveExtractor(BaseExtractor):
     name = "remotive"
 
     def extract(self) -> list[dict]:
-        resp = request_with_retry(self.name, "GET", API_URL, params={"search": "data engineer"})
+        resp = request_with_retry(self.name, "GET", API_URL, params={"category": CATEGORY})
         random_delay()
 
         try:
@@ -26,9 +32,6 @@ class RemotiveExtractor(BaseExtractor):
 
         jobs = []
         for e in payload["jobs"]:
-            title = (e.get("title") or "").lower()
-            if not any(term in title for term in SEARCH_TERMS):
-                continue
             jobs.append({
                 "source": self.name,
                 "external_id": str(e.get("id")),

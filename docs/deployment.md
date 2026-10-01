@@ -2,10 +2,6 @@
 
 How to deploy `remote-job-pipeline` so that it runs unattended on GitHub Actions, writes raw data to Cloudflare R2, and serves the processed data from Supabase.
 
-> Status: written ahead of implementation. Script and module names follow the repository layout in the README. Free-tier limits and console menus change over time, so verify anything marked *(verify)* against the provider's current documentation.
->
-> **Why R2, not Google Cloud Storage:** GCS's free tier still requires a Google Cloud billing account with a payment method attached, and a billing account can be suspended for reasons unrelated to this project (see ADR-025), taking the pipeline down with it. Cloudflare R2 needs no billing account or credit card for its free tier and is S3-compatible, so the same `boto3` client and partition layout apply.
-
 ## 1. Overview
 
 ```text

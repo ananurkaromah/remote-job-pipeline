@@ -8,7 +8,7 @@ lifecycle.json
 !.env.example
 *.json
 !tests/fixtures/**/*.json
-!resources/fx_rates.json
+!**/resources/fx_rates.json
 *.pem
 sa-key.json
 gcp.json

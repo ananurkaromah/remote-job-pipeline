@@ -34,6 +34,46 @@ def _countries() -> list[str]:
         return [line.strip().lower() for line in f if line.strip() and not line.startswith("#")]
 
 
+@lru_cache(maxsize=1)
+def _us_states() -> list[str]:
+    with open(_RESOURCES / "us_states.txt", encoding="utf-8") as f:
+        return [line.strip().lower() for line in f if line.strip() and not line.startswith("#")]
+
+
+# Qualifier templates combined with a state name to detect state-level
+# restrictions (e.g. "California candidates", "must reside in Texas").
+# A bare state name alone never matches -- only these specific phrasings do,
+# to avoid false positives on incidental mentions ("experience with
+# California-based clients" should not be read as a restriction).
+_US_STATE_TEMPLATES = [
+    "{state} only",
+    "{state} residents only",
+    "{state} residents",
+    "{state} candidates",
+    "{state}-based candidates",
+    "{state} based candidates",
+    "based in {state}",
+    "must reside in {state}",
+    "must be based in {state}",
+    "must be located in {state}",
+    "authorized to work in {state}",
+    "candidates in {state}",
+    "candidates based in {state}",
+]
+
+
+def _find_us_state_restrictions(lower_text: str, negation_guards: list[str]) -> list[str]:
+    """Return matched phrases like 'california candidates' naming a US state restriction."""
+    hits: list[str] = []
+    for state in _us_states():
+        for template in _US_STATE_TEMPLATES:
+            phrase = template.format(state=state)
+            idx = lower_text.find(phrase)
+            if idx != -1 and not _has_negation_guard(lower_text, idx, negation_guards):
+                hits.append(phrase)
+    return hits
+
+
 def _find_phrase(text: str, phrase: str) -> bool:
     return phrase in text
 
@@ -87,6 +127,11 @@ def classify_from_text(text: str) -> EligibilityResult:
         idx = lower.find(phrase)
         if idx != -1 and not _has_negation_guard(lower, idx, patterns["negation_guards"]):
             negative_hits.append(phrase)
+
+    # US state-level restrictions (e.g. "California candidates") are common
+    # in practice -- many "remote" US postings are actually state-limited,
+    # not just country-limited. Treated the same as other negative phrases.
+    negative_hits.extend(_find_us_state_restrictions(lower, patterns["negation_guards"]))
 
     timezone_hits = [p for p in patterns["timezone_phrases"] if p in lower]
     timezone_hint = ", ".join(timezone_hits[:3]) if timezone_hits else None

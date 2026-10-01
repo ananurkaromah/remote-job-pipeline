@@ -1,5 +1,19 @@
 """JSearch (RapidAPI) extractor: aggregator API, small free quota (ADR-021).
 
+NOTE (fixed after live testing): RapidAPI migrated this API's endpoint from
+/search to /search-v2 (confirmed via a live 404 on /search: "Endpoint
+'/search' does not exist"). /search-v2 uses cursor-based pagination for
+page 2+, but the first page (what we fetch here) needs no cursor. Response
+field names (job_title, employer_name, job_apply_link, job_publisher,
+job_posted_at_datetime_utc, job_country, job_id, ...) are unchanged, but
+the response envelope is now one level deeper:
+    {"status": "OK", "request_id": ..., "parameters": {...},
+     "data": {"jobs": [...], "cursor": "..."}}
+Earlier versions of this API returned the job list directly under "data".
+Confirmed live via diagnose_jsearch.py on 2026-09-30. Also confirmed
+/search-v2 can be noticeably slower than the old endpoint (a 15s timeout
+was insufficient in testing), hence the longer timeout below.
+
 Quota budgeting is enforced BEFORE calling the API:
   - Only runs on configured weekdays (JSEARCH_RUN_DAYS).
   - Skips entirely if today's data already exists in the raw lake (so a
@@ -23,7 +37,7 @@ from rjp.utils.quota import QuotaSkip, RunBudget, already_extracted_today
 
 logger = get_logger(__name__)
 
-API_URL = "https://jsearch.p.rapidapi.com/search"
+API_URL = "https://jsearch.p.rapidapi.com/search-v2"
 QUERIES = ["data engineer remote", "etl developer remote", "junior data engineer remote"]
 
 
@@ -59,6 +73,7 @@ class JSearchExtractor(BaseExtractor):
                     self.name, "GET", API_URL,
                     headers=headers, params={"query": query, "date_posted": "week"},
                     max_retries=1,  # never retry a quota-limited call; budget instead
+                    timeout=45,     # /search-v2 has been observed to be slower than the old endpoint
                 )
             except ExtractionError as e:
                 budget.record_request()
@@ -85,7 +100,14 @@ class JSearchExtractor(BaseExtractor):
                 except ValueError:
                     pass
 
-            for e_job in payload.get("data", []):
+            data = payload.get("data")
+            if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
+                raise ExtractionError(
+                    self.name, FailureReason.PARSE,
+                    f"expected data.jobs to be a list, got data={type(data).__name__}",
+                )
+
+            for e_job in data["jobs"]:
                 jobs.append({
                     "source": self.name,
                     "external_id": e_job.get("job_id"),

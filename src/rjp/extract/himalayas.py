@@ -1,12 +1,17 @@
-"""Himalayas job feed extractor. Structured location fields help eligibility."""
+"""Himalayas job feed extractor. Structured location fields help eligibility.
+
+NOTE: confirmed working via live testing. All jobs are passed through
+unfiltered to transform/role_filter.py, consistent with the other
+extractors -- title pre-filtering at this layer previously caused valid
+adjacent-role postings to be dropped before transform ever saw them.
+"""
 from __future__ import annotations
 
 from rjp.exceptions import ExtractionError, FailureReason
 from rjp.extract.base import BaseExtractor
-from rjp.utils.http import random_delay, request_with_retry, require_keys
+from rjp.utils.http import random_delay, require_keys, request_with_retry
 
 API_URL = "https://himalayas.app/jobs/api"
-SEARCH_TERMS = ("data engineer", "etl")
 
 
 class HimalayasExtractor(BaseExtractor):
@@ -25,9 +30,6 @@ class HimalayasExtractor(BaseExtractor):
 
         jobs = []
         for e in payload["jobs"]:
-            title = (e.get("title") or "").lower()
-            if not any(term in title for term in SEARCH_TERMS):
-                continue
             company_field = e.get("companyName") or e.get("company")
             if isinstance(company_field, dict):
                 company_field = company_field.get("name", "")
@@ -38,7 +40,7 @@ class HimalayasExtractor(BaseExtractor):
                 "external_id": str(e.get("guid") or e.get("id")),
                 "title": e.get("title"),
                 "company": company_field or "",
-                "description": e.get("description", ""),
+                "description": e.get("description") or e.get("excerpt", ""),
                 "url": e.get("applicationLink") or e.get("url"),
                 "posted_at": e.get("pubDate"),
                 "location_raw": structured_location,
