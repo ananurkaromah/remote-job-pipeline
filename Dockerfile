@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM public.ecr.aws/docker/library/python:3.12-slim
 ARG INSTALL_CHROME=false
 
 RUN if [ "$INSTALL_CHROME" = "true" ]; then \
@@ -8,9 +8,7 @@ RUN if [ "$INSTALL_CHROME" = "true" ]; then \
 
 WORKDIR /app
 COPY requirements.txt .
-
-# CPU-only PyTorch keeps the image much smaller than the default CUDA build.
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu \
+RUN pip install --no-cache-dir torch==2.3.1 --index-url https://download.pytorch.org/whl/cpu \
  && pip install --no-cache-dir -r requirements.txt
 
 # Bake the embedding model into a fixed cache directory inside the image.
