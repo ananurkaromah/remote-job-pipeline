@@ -22,6 +22,8 @@
 
 ## 2. High-level flow
 
+![remote-job-pipeline-architecture](images/remote-job-pipeline-architecture.png)
+
 ```text
 GitHub Actions (cron) -> docker run rjp
         |
