@@ -4,6 +4,7 @@ Replaces Google Cloud Storage (ADR-002 storage-agnostic layering meant only
 this module needed to change). Partition layout, run envelope, and the
 overwrite-by-partition rule are unchanged from the original GCS design.
 """
+
 from __future__ import annotations
 
 import json
@@ -26,6 +27,7 @@ def _json_default(obj: Any):
 @lru_cache(maxsize=1)
 def _client():
     import boto3
+
     return boto3.client(
         "s3",
         endpoint_url=f"https://{config.R2_ACCOUNT_ID}.r2.cloudflarestorage.com",
@@ -41,6 +43,7 @@ def _partition_key(prefix: str, run_date: date, filename: str) -> str:
 
 def object_exists(key: str) -> bool:
     from botocore.exceptions import ClientError
+
     try:
         _client().head_object(Bucket=config.R2_BUCKET, Key=key)
         return True
@@ -52,6 +55,7 @@ def object_exists(key: str) -> bool:
 
 def get_json(key: str) -> dict | None:
     from botocore.exceptions import ClientError
+
     try:
         obj = _client().get_object(Bucket=config.R2_BUCKET, Key=key)
         return json.loads(obj["Body"].read())
@@ -69,7 +73,9 @@ def get_today_envelope(run_date: date | None = None) -> dict | None:
     return get_json(key)
 
 
-def load_raw_to_r2(jobs: list[dict], envelope_meta: dict, run_date: date | None = None, partial: bool = False) -> str:
+def load_raw_to_r2(
+    jobs: list[dict], envelope_meta: dict, run_date: date | None = None, partial: bool = False
+) -> str:
     """Write the raw run envelope. Never overwrites a good file with an empty result.
 
     FUTURE-PROOFING: currently sends the whole payload in one PutObject call,

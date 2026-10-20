@@ -1,4 +1,5 @@
 """Normalization helpers used by dedup and downstream filters."""
+
 from __future__ import annotations
 
 import re
@@ -46,7 +47,8 @@ def canonical_url(url: str) -> str:
         return ""
     parts = urlsplit(url)
     query = [
-        (k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True)
+        (k, v)
+        for k, v in parse_qsl(parts.query, keep_blank_values=True)
         if not any(k.lower().startswith(p) for p in _TRACKING_PARAMS_PREFIXES)
     ]
     path = parts.path.rstrip("/")

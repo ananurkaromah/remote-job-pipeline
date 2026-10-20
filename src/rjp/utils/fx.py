@@ -3,6 +3,7 @@
 Only currencies we are confident about are converted; anything else stays
 unparsed rather than guessing (ADR-007: salary is optional enrichment).
 """
+
 from __future__ import annotations
 
 import json

@@ -4,6 +4,7 @@ Exit code 0: success or warning (including "0 jobs, verify this is
 expected"). Exit code 1: only when every source failed, or the transform
 failure ratio exceeds the configured threshold.
 """
+
 from __future__ import annotations
 
 import sys
@@ -67,7 +68,9 @@ def run() -> int:
     envelope_meta = {
         "run_id": run_id,
         "extracted_at": utcnow().isoformat(),
-        "sources": {r.source: {"status": r.status.value, "count": len(r.jobs), "reason": r.reason} for r in results},
+        "sources": {
+            r.source: {"status": r.status.value, "count": len(r.jobs), "reason": r.reason} for r in results
+        },
     }
     any_non_ok = any(r.status in (SourceStatus.DEGRADED, SourceStatus.FAILED) for r in results)
     load_raw_to_r2(raw_jobs, envelope_meta, run_date=today, partial=any_non_ok)
@@ -106,11 +109,16 @@ def run() -> int:
     summary.duplicates_removed = len(losers)
 
     replaced_ids = [
-        e["job_id"] for e in existing
-        if e["job_id"] not in {w["job_id"] for w in winners} and e["job_id"] not in {loser["job_id"] for loser in losers}
+        e["job_id"]
+        for e in existing
+        if e["job_id"] not in {w["job_id"] for w in winners}
+        and e["job_id"] not in {loser["job_id"] for loser in losers}
     ]
 
-    rejected_dedup = [{"title": loser.get("title"), "reason": "duplicate", "duplicate_of": loser.get("duplicate_of")} for loser in losers]
+    rejected_dedup = [
+        {"title": loser.get("title"), "reason": "duplicate", "duplicate_of": loser.get("duplicate_of")}
+        for loser in losers
+    ]
     write_rejected(rejected_filter + rejected_dedup, run_id, today)
 
     from rjp.embed.encoder import encode_documents
@@ -140,7 +148,12 @@ def run() -> int:
         logger.exception("retention cleanup failed; continuing (non-fatal)")
 
     notify_run_summary(summary)
-    logger.info("run_id=%s done: loaded=%d duplicates_removed=%d", run_id, summary.loaded_count, summary.duplicates_removed)
+    logger.info(
+        "run_id=%s done: loaded=%d duplicates_removed=%d",
+        run_id,
+        summary.loaded_count,
+        summary.duplicates_removed,
+    )
     return 0
 
 

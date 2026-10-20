@@ -5,6 +5,7 @@ Usage:
     python scripts/run_local.py             # full run against real services
     python scripts/run_local.py --dry-run   # extract + transform only, no writes
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,9 +27,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true", help="extract + transform only, no writes")
     parser.add_argument(
-        "--include-jsearch", action="store_true",
+        "--include-jsearch",
+        action="store_true",
         help="also call JSearch during --dry-run (uses real quota, ignores JSEARCH_RUN_DAYS "
-             "if you set JSEARCH_RUN_DAYS to include today for a one-off manual test)",
+        "if you set JSEARCH_RUN_DAYS to include today for a one-off manual test)",
     )
     args = parser.parse_args()
 
@@ -46,6 +48,7 @@ def main() -> None:
 
         if rejected:
             from collections import Counter
+
             reasons = Counter(r["reason"] for r in rejected)
             print("\nRejection reasons:")
             for reason, count in reasons.most_common():
@@ -64,6 +67,7 @@ def main() -> None:
         return
 
     from rjp.main import run
+
     sys.exit(run())
 
 

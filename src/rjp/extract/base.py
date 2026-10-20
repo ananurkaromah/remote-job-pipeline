@@ -5,6 +5,7 @@ Any failure -- network, auth, quota, or a changed response shape -- must be
 raised as ExtractionError (or PartialExtractionError if some jobs were
 already collected). See docs/architecture.md section 3.2.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

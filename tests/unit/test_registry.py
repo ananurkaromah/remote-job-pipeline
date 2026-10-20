@@ -34,7 +34,9 @@ class _SkippedExtractor(BaseExtractor):
 
 
 def test_each_source_attributed_independently():
-    results = extract_all_sources([_OkExtractor(), _FailExtractor(), _DegradedExtractor(), _SkippedExtractor()])
+    results = extract_all_sources(
+        [_OkExtractor(), _FailExtractor(), _DegradedExtractor(), _SkippedExtractor()]
+    )
     by_name = {r.source: r for r in results}
 
     assert by_name["ok_source"].status == SourceStatus.OK

@@ -5,6 +5,7 @@ Usage:
     python scripts/evaluate.py eligibility
     python scripts/evaluate.py role
 """
+
 from __future__ import annotations
 
 import argparse
@@ -31,7 +32,8 @@ def evaluate_eligibility() -> None:
     confusion: Counter = Counter()
     for row in rows:
         result = classify_eligibility(
-            title=row.get("title", ""), description=row.get("description", ""),
+            title=row.get("title", ""),
+            description=row.get("description", ""),
             structured_location=row.get("structured_location"),
         )
         confusion[(row["label"], result.status)] += 1
@@ -49,7 +51,11 @@ def evaluate_eligibility() -> None:
     tp_r = confusion[("restricted", "restricted")]
     fn_r = sum(v for (t, p), v in confusion.items() if t == "restricted" and p != "restricted")
     recall_r = tp_r / (tp_r + fn_r) if (tp_r + fn_r) else float("nan")
-    print(f"recall(restricted)  = {recall_r:.2f}" if tp_r + fn_r else "recall(restricted): no restricted examples")
+    print(
+        f"recall(restricted)  = {recall_r:.2f}"
+        if tp_r + fn_r
+        else "recall(restricted): no restricted examples"
+    )
 
 
 def evaluate_role() -> None:
@@ -61,7 +67,9 @@ def evaluate_role() -> None:
         if predicted_keep == row["keep"]:
             correct += 1
         else:
-            print(f"MISMATCH title={row['title']!r} expected keep={row['keep']} got keep={predicted_keep} ({decision.reason})")
+            print(
+                f"MISMATCH title={row['title']!r} expected keep={row['keep']} got keep={predicted_keep} ({decision.reason})"
+            )
     print(f"\n{correct}/{len(rows)} correct ({correct / len(rows):.0%})" if rows else "no labeled rows")
 
 

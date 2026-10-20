@@ -6,6 +6,7 @@ Usage:
     python scripts/apply_sql.py
     python scripts/apply_sql.py --only 006_roles.sql   # apply one file only
 """
+
 from __future__ import annotations
 
 import argparse

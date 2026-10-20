@@ -26,6 +26,7 @@ SourceStatus.SKIPPED, not FAILED. If at least one query succeeds before a
 429, the extractor raises PartialExtractionError so the jobs already
 collected are kept (SourceStatus.DEGRADED).
 """
+
 from __future__ import annotations
 
 from rjp import config
@@ -70,10 +71,13 @@ class JSearchExtractor(BaseExtractor):
                 break
             try:
                 resp = request_with_retry(
-                    self.name, "GET", API_URL,
-                    headers=headers, params={"query": query, "date_posted": "week"},
+                    self.name,
+                    "GET",
+                    API_URL,
+                    headers=headers,
+                    params={"query": query, "date_posted": "week"},
                     max_retries=1,  # never retry a quota-limited call; budget instead
-                    timeout=45,     # /search-v2 has been observed to be slower than the old endpoint
+                    timeout=45,  # /search-v2 has been observed to be slower than the old endpoint
                 )
             except ExtractionError as e:
                 budget.record_request()
@@ -103,24 +107,27 @@ class JSearchExtractor(BaseExtractor):
             data = payload.get("data")
             if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
                 raise ExtractionError(
-                    self.name, FailureReason.PARSE,
+                    self.name,
+                    FailureReason.PARSE,
                     f"expected data.jobs to be a list, got data={type(data).__name__}",
                 )
 
             for e_job in data["jobs"]:
-                jobs.append({
-                    "source": self.name,
-                    "external_id": e_job.get("job_id"),
-                    "title": e_job.get("job_title"),
-                    "company": e_job.get("employer_name"),
-                    "description": e_job.get("job_description", ""),
-                    "url": e_job.get("job_apply_link"),
-                    "posted_at": e_job.get("job_posted_at_datetime_utc"),
-                    "location_raw": e_job.get("job_country"),
-                    "structured_location": e_job.get("job_country"),
-                    "is_direct_apply_url": bool(e_job.get("job_apply_is_direct", False)),
-                    "origin_portal": e_job.get("job_publisher"),
-                })
+                jobs.append(
+                    {
+                        "source": self.name,
+                        "external_id": e_job.get("job_id"),
+                        "title": e_job.get("job_title"),
+                        "company": e_job.get("employer_name"),
+                        "description": e_job.get("job_description", ""),
+                        "url": e_job.get("job_apply_link"),
+                        "posted_at": e_job.get("job_posted_at_datetime_utc"),
+                        "location_raw": e_job.get("job_country"),
+                        "structured_location": e_job.get("job_country"),
+                        "is_direct_apply_url": bool(e_job.get("job_apply_is_direct", False)),
+                        "origin_portal": e_job.get("job_publisher"),
+                    }
+                )
 
         logger.info("source=%s queries_run=%d jobs=%d", self.name, queries_run, len(jobs))
         return jobs

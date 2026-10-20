@@ -9,8 +9,12 @@ def test_none_job_does_not_crash_the_loop():
 
 def test_mixed_valid_and_invalid_jobs():
     valid = {
-        "title": "Data Engineer", "company": "Acme", "description": "Worldwide remote role.",
-        "url": "https://example.com/1", "source": "remoteok", "posted_at": None,
+        "title": "Data Engineer",
+        "company": "Acme",
+        "description": "Worldwide remote role.",
+        "url": "https://example.com/1",
+        "source": "remoteok",
+        "posted_at": None,
     }
     jobs = [None, "not a dict either", valid]
     kept, rejected, skipped = transform_all(jobs)

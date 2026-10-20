@@ -5,6 +5,7 @@ computed after isinstance(job, dict), because a fully corrupt job (e.g.
 None) would otherwise raise a second exception inside the except block and
 hide the original error.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -140,7 +141,9 @@ def transform_all(raw_jobs: list) -> tuple[list[dict], list[dict], int]:
             kept.append(transform_one(job))
         except DropJob as e:
             label = job.get("title", "unknown") if isinstance(job, dict) else f"<{type(job).__name__}>"
-            rejected.append({"title": label, "reason": e.reason, "raw": job if isinstance(job, dict) else None})
+            rejected.append(
+                {"title": label, "reason": e.reason, "raw": job if isinstance(job, dict) else None}
+            )
         except Exception:
             skipped += 1
             # Never call .get() before checking isinstance: a fully corrupt
@@ -155,7 +158,8 @@ def transform_all(raw_jobs: list) -> tuple[list[dict], list[dict], int]:
     if total > 0 and (skipped / total) > config.TRANSFORM_FAILURE_THRESHOLD:
         logger.error(
             "transform failure ratio %.2f exceeds threshold %.2f -- likely a source format change",
-            skipped / total, config.TRANSFORM_FAILURE_THRESHOLD,
+            skipped / total,
+            config.TRANSFORM_FAILURE_THRESHOLD,
         )
 
     return kept, rejected, skipped

@@ -5,6 +5,7 @@ skipped automatically unless RUN_INTEGRATION_TESTS=1 is set (ADR-015).
 This is NOT run in CI by default; run it manually before scheduling the
 pipeline for the first time (see docs/deployment.md section 8).
 """
+
 from __future__ import annotations
 
 import os
@@ -41,7 +42,7 @@ def test_running_pipeline_twice_is_idempotent():
     try:
         with conn.cursor() as cur:
             cur.execute("SELECT count(*) FROM jobs")
-            count_2, = cur.fetchone()
+            (count_2,) = cur.fetchone()
     finally:
         conn.close()
 

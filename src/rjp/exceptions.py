@@ -4,19 +4,20 @@ Extractors never swallow errors and return an empty list to signal failure.
 An empty list means "the source is healthy and has no matching data". Any
 failure is raised, so it is always attributed to a named source and reason.
 """
+
 from __future__ import annotations
 
 from enum import Enum
 
 
 class FailureReason(str, Enum):
-    NETWORK = "network"          # timeout, DNS, connection reset
+    NETWORK = "network"  # timeout, DNS, connection reset
     HTTP_STATUS = "http_status"  # unexpected 4xx/5xx after retries
-    AUTH = "auth"                # 401/403, bad API key
-    QUOTA = "quota"              # 429 / monthly quota exhausted
-    PARSE = "parse"              # response shape changed, required keys missing
-    BLOCKED = "blocked"          # captcha / anti-bot page
-    DISABLED = "disabled"        # source intentionally disabled (e.g. Selenium)
+    AUTH = "auth"  # 401/403, bad API key
+    QUOTA = "quota"  # 429 / monthly quota exhausted
+    PARSE = "parse"  # response shape changed, required keys missing
+    BLOCKED = "blocked"  # captcha / anti-bot page
+    DISABLED = "disabled"  # source intentionally disabled (e.g. Selenium)
 
 
 class ExtractionError(Exception):

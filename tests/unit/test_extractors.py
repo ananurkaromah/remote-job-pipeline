@@ -10,6 +10,7 @@ the HTTP layer and asserting on parsed output pins today's known-good
 field mapping, so a future API change breaks a fast, offline test instead
 of only surfacing in a live run.
 """
+
 from __future__ import annotations
 
 import json
@@ -70,9 +71,10 @@ class TestRemotiveExtractor:
         assert job["origin_portal"] == "remotive"
 
     def test_raises_parse_error_on_missing_jobs_key(self):
+        import pytest
+
         from rjp.exceptions import ExtractionError
         from rjp.extract.remotive import RemotiveExtractor
-        import pytest
 
         with patch("rjp.utils.http.requests.request", return_value=_mock_response({"unexpected": "shape"})):
             with pytest.raises(ExtractionError):
@@ -103,8 +105,10 @@ class TestJSearchExtractor:
         from rjp.extract.jsearch import JSearchExtractor
 
         payload = _load_fixture("jsearch.json")
-        with patch("rjp.config.RAPIDAPI_KEY", "test-key"), \
-             patch("rjp.utils.http.requests.request", return_value=_mock_response(payload)):
+        with (
+            patch("rjp.config.RAPIDAPI_KEY", "test-key"),
+            patch("rjp.utils.http.requests.request", return_value=_mock_response(payload)),
+        ):
             jobs = JSearchExtractor().extract()
 
         assert len(jobs) >= 1
@@ -117,20 +121,24 @@ class TestJSearchExtractor:
     def test_raises_parse_error_if_data_is_not_a_dict_with_jobs(self):
         """Guards against another envelope change silently returning 0 jobs
         instead of a visible failure (ADR-003: raise, don't swallow)."""
-        from rjp.exceptions import ExtractionError
-        from rjp.extract.jsearch import JSearchExtractor
         import pytest
 
+        from rjp.exceptions import ExtractionError
+        from rjp.extract.jsearch import JSearchExtractor
+
         bad_payload = {"status": "OK", "data": ["not", "a", "dict"]}
-        with patch("rjp.config.RAPIDAPI_KEY", "test-key"), \
-             patch("rjp.utils.http.requests.request", return_value=_mock_response(bad_payload)):
+        with (
+            patch("rjp.config.RAPIDAPI_KEY", "test-key"),
+            patch("rjp.utils.http.requests.request", return_value=_mock_response(bad_payload)),
+        ):
             with pytest.raises(ExtractionError):
                 JSearchExtractor().extract()
 
     def test_missing_api_key_raises_auth_error(self):
+        import pytest
+
         from rjp.exceptions import ExtractionError, FailureReason
         from rjp.extract.jsearch import JSearchExtractor
-        import pytest
 
         with patch("rjp.config.RAPIDAPI_KEY", ""):
             with pytest.raises(ExtractionError) as exc_info:

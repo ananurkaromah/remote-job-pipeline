@@ -1,4 +1,5 @@
 """Tech stack extraction using the alias dictionary in resources/tech_aliases.yaml."""
+
 from __future__ import annotations
 
 import re

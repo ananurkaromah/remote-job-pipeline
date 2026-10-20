@@ -1,4 +1,5 @@
 """Discord webhook notifications: never raises, short timeout (ADR-004, ADR-017)."""
+
 from __future__ import annotations
 
 import requests

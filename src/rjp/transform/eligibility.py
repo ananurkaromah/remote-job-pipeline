@@ -10,6 +10,7 @@ produce 'unknown', never a drop. Only an explicit, unambiguous restriction
 produces 'restricted'. Timezone overlap requirements are recorded separately
 and never change the status (ADR-005).
 """
+
 from __future__ import annotations
 
 from functools import lru_cache
@@ -79,7 +80,7 @@ def _find_phrase(text: str, phrase: str) -> bool:
 
 
 def _has_negation_guard(text: str, match_start: int, guards: list[str]) -> bool:
-    window = text[max(0, match_start - 40):match_start]
+    window = text[max(0, match_start - 40) : match_start]
     return any(g in window for g in guards)
 
 
@@ -91,8 +92,10 @@ def classify_from_structured_location(location_field: str | None) -> Eligibility
 
     if any(p in loc for p in ("worldwide", "anywhere", "global", "apac", "asia", "indonesia")):
         return EligibilityResult(
-            status="eligible", confidence="high",
-            evidence=[location_field], reason="structured_worldwide_or_apac",
+            status="eligible",
+            confidence="high",
+            evidence=[location_field],
+            reason="structured_worldwide_or_apac",
         )
 
     # Country list present but Indonesia is not in it (rule #3)
@@ -102,8 +105,10 @@ def classify_from_structured_location(location_field: str | None) -> Eligibility
         # (comma/slash separated country names), not a single incidental word.
         if len(mentioned) >= 1 and any(sep in loc for sep in (",", "/", " and ", " or ")):
             return EligibilityResult(
-                status="restricted", confidence="high",
-                evidence=[location_field], reason="structured_country_list_excludes_id",
+                status="restricted",
+                confidence="high",
+                evidence=[location_field],
+                reason="structured_country_list_excludes_id",
             )
     return None
 
@@ -138,32 +143,42 @@ def classify_from_text(text: str) -> EligibilityResult:
 
     if positive_hits and negative_hits:
         return EligibilityResult(
-            status="unknown", confidence="low",
-            evidence=positive_hits + negative_hits, reason="conflict",
+            status="unknown",
+            confidence="low",
+            evidence=positive_hits + negative_hits,
+            reason="conflict",
             timezone_hint=timezone_hint,
         )
     if positive_hits:
         return EligibilityResult(
-            status="eligible", confidence="medium",
-            evidence=positive_hits, reason="description_worldwide_or_apac",
+            status="eligible",
+            confidence="medium",
+            evidence=positive_hits,
+            reason="description_worldwide_or_apac",
             timezone_hint=timezone_hint,
         )
     if negative_hits:
         return EligibilityResult(
-            status="restricted", confidence="medium",
-            evidence=negative_hits, reason="description_hard_restriction",
+            status="restricted",
+            confidence="medium",
+            evidence=negative_hits,
+            reason="description_hard_restriction",
             timezone_hint=timezone_hint,
         )
 
     soft_hits = [p for p in patterns["soft_negative_phrases"] if p in lower]
     if soft_hits:
         return EligibilityResult(
-            status="unknown", confidence="low",
-            evidence=soft_hits, reason="soft_visa_signal_only",
+            status="unknown",
+            confidence="low",
+            evidence=soft_hits,
+            reason="soft_visa_signal_only",
             timezone_hint=timezone_hint,
         )
 
-    return EligibilityResult(status="unknown", confidence="low", reason="no_info", timezone_hint=timezone_hint)
+    return EligibilityResult(
+        status="unknown", confidence="low", reason="no_info", timezone_hint=timezone_hint
+    )
 
 
 def classify_eligibility(

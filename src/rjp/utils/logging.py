@@ -1,4 +1,5 @@
 """Structured logging: every line carries source= and run_id= where relevant."""
+
 from __future__ import annotations
 
 import logging

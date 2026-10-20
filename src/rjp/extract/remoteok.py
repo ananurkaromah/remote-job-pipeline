@@ -8,6 +8,7 @@ Pipeline Engineer" -- make the relevance decision. Filtering by a narrow
 title substring here would silently drop valid adjacent-role postings
 before they ever reach that logic.
 """
+
 from __future__ import annotations
 
 from rjp.exceptions import ExtractionError, FailureReason
@@ -37,17 +38,19 @@ class RemoteOKExtractor(BaseExtractor):
 
         jobs = []
         for e in entries:
-            jobs.append({
-                "source": self.name,
-                "external_id": str(e.get("id")),
-                "title": e.get("position"),
-                "company": e.get("company"),
-                "description": e.get("description", ""),
-                "url": e.get("url") or f"https://remoteok.com/l/{e.get('id')}",
-                "posted_at": e.get("date"),
-                "location_raw": e.get("location"),
-                "structured_location": e.get("location"),
-                "is_direct_apply_url": False,
-                "origin_portal": "remoteok",
-            })
+            jobs.append(
+                {
+                    "source": self.name,
+                    "external_id": str(e.get("id")),
+                    "title": e.get("position"),
+                    "company": e.get("company"),
+                    "description": e.get("description", ""),
+                    "url": e.get("url") or f"https://remoteok.com/l/{e.get('id')}",
+                    "posted_at": e.get("date"),
+                    "location_raw": e.get("location"),
+                    "structured_location": e.get("location"),
+                    "is_direct_apply_url": False,
+                    "origin_portal": "remoteok",
+                }
+            )
         return jobs

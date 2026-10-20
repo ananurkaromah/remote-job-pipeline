@@ -1,4 +1,5 @@
 """Environment-driven configuration. Import this module, never read os.environ elsewhere."""
+
 from __future__ import annotations
 
 import os
@@ -43,7 +44,9 @@ MAX_YEARS_REQUIRED_EXCLUSIVE = _int("MAX_YEARS_REQUIRED_EXCLUSIVE", 3)  # ADR-00
 
 # --- JSearch quota (ADR-021) ---
 JSEARCH_MAX_REQUESTS_PER_RUN = _int("JSEARCH_MAX_REQUESTS_PER_RUN", 3)
-JSEARCH_RUN_DAYS = [d.strip().upper() for d in os.environ.get("JSEARCH_RUN_DAYS", "MON,THU").split(",") if d.strip()]
+JSEARCH_RUN_DAYS = [
+    d.strip().upper() for d in os.environ.get("JSEARCH_RUN_DAYS", "MON,THU").split(",") if d.strip()
+]
 JSEARCH_QUOTA_RESERVE = _int("JSEARCH_QUOTA_RESERVE", 10)
 
 # --- Selenium (ADR-022, off by default) ---

@@ -1,4 +1,5 @@
 """HTTP helpers shared by extractors: UA rotation, random delay, retry with backoff."""
+
 from __future__ import annotations
 
 import random
@@ -18,8 +19,7 @@ USER_AGENTS = [
     "Chrome/124.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) "
     "Version/17.4 Safari/605.1.15",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
 ]
 
 # Status codes worth retrying: transient server-side or rate-limit issues.
@@ -59,7 +59,7 @@ def request_with_retry(
             last_exc = e
             logger.warning("source=%s network error attempt=%d/%d: %s", source, attempt, max_retries, e)
             if attempt < max_retries:
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
                 continue
             raise ExtractionError(source, FailureReason.NETWORK, str(e)) from e
 
@@ -72,11 +72,15 @@ def request_with_retry(
                 "source=%s retryable status=%d attempt=%d/%d", source, resp.status_code, attempt, max_retries
             )
             if attempt < max_retries:
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
                 continue
-            raise ExtractionError(source, FailureReason.HTTP_STATUS, f"HTTP {resp.status_code} after retries: {resp.text[:300]}")
+            raise ExtractionError(
+                source, FailureReason.HTTP_STATUS, f"HTTP {resp.status_code} after retries: {resp.text[:300]}"
+            )
         if resp.status_code >= 400:
-            raise ExtractionError(source, FailureReason.HTTP_STATUS, f"HTTP {resp.status_code}: {resp.text[:300]}")
+            raise ExtractionError(
+                source, FailureReason.HTTP_STATUS, f"HTTP {resp.status_code}: {resp.text[:300]}"
+            )
 
         return resp
 

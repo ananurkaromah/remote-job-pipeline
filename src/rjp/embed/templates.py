@@ -1,4 +1,5 @@
 """Structured embedding text template (ADR-013). Salary omitted when not disclosed."""
+
 from __future__ import annotations
 
 # Prefix used only for QUERY-side embeddings (retrieval instruction). Never

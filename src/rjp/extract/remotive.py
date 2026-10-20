@@ -6,11 +6,12 @@ request the software-dev category, which reliably contains Data
 Engineer/ETL postings, and let transform/role_filter.py make the actual
 relevance decision rather than pre-filtering on a narrow title substring.
 """
+
 from __future__ import annotations
 
 from rjp.exceptions import ExtractionError, FailureReason
 from rjp.extract.base import BaseExtractor
-from rjp.utils.http import random_delay, require_keys, request_with_retry
+from rjp.utils.http import random_delay, request_with_retry, require_keys
 
 API_URL = "https://remotive.com/api/remote-jobs"
 CATEGORY = "software-dev"
@@ -32,17 +33,19 @@ class RemotiveExtractor(BaseExtractor):
 
         jobs = []
         for e in payload["jobs"]:
-            jobs.append({
-                "source": self.name,
-                "external_id": str(e.get("id")),
-                "title": e.get("title"),
-                "company": e.get("company_name"),
-                "description": e.get("description", ""),
-                "url": e.get("url"),
-                "posted_at": e.get("publication_date"),
-                "location_raw": e.get("candidate_required_location"),
-                "structured_location": e.get("candidate_required_location"),
-                "is_direct_apply_url": False,
-                "origin_portal": "remotive",
-            })
+            jobs.append(
+                {
+                    "source": self.name,
+                    "external_id": str(e.get("id")),
+                    "title": e.get("title"),
+                    "company": e.get("company_name"),
+                    "description": e.get("description", ""),
+                    "url": e.get("url"),
+                    "posted_at": e.get("publication_date"),
+                    "location_raw": e.get("candidate_required_location"),
+                    "structured_location": e.get("candidate_required_location"),
+                    "is_direct_apply_url": False,
+                    "origin_portal": "remotive",
+                }
+            )
         return jobs

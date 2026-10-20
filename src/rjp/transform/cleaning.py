@@ -1,4 +1,5 @@
 """HTML stripping and text normalization."""
+
 from __future__ import annotations
 
 import html

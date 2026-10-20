@@ -1,4 +1,5 @@
 """Builds Discord message text and embed color from a RunSummary (ADR-004, ADR-017)."""
+
 from __future__ import annotations
 
 from rjp.models import RunSummary, SourceStatus
@@ -27,7 +28,9 @@ def format_summary(summary: RunSummary) -> tuple[str, int]:
         lines.append(f"All sources failed: {details}")
         return "\n".join(lines), color
 
-    source_counts = ", ".join(f"{r.source} {len(r.jobs)}" for r in summary.source_results if r.status != SourceStatus.SKIPPED)
+    source_counts = ", ".join(
+        f"{r.source} {len(r.jobs)}" for r in summary.source_results if r.status != SourceStatus.SKIPPED
+    )
     total_extracted = sum(len(r.jobs) for r in summary.source_results)
     lines.append(f"extracted {total_extracted} ({source_counts})")
 
@@ -54,6 +57,8 @@ def format_summary(summary: RunSummary) -> tuple[str, int]:
         lines.append(f"loaded {summary.loaded_count} ({elig})")
 
     if summary.transform_skipped:
-        lines.append(f"({summary.transform_skipped}/{summary.transform_total} skipped due to transform errors)")
+        lines.append(
+            f"({summary.transform_skipped}/{summary.transform_total} skipped due to transform errors)"
+        )
 
     return "\n".join(lines), color

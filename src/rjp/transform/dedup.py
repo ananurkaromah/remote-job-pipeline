@@ -12,6 +12,7 @@ so that re-running the pipeline on the same data always picks the same
 winner (idempotency, ADR-015). Losers are not merged; they are dropped and
 should be written to rejected-data/ with duplicate_of by the caller.
 """
+
 from __future__ import annotations
 
 import re

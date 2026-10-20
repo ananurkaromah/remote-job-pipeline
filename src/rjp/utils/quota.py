@@ -5,10 +5,11 @@ A source can end a run as SKIPPED (intentional, no request made), DEGRADED
 The registry (extract/registry.py) interprets QuotaSkip / the extractor's
 own PartialExtractionError to set the final SourceStatus.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from rjp import config
 
@@ -26,14 +27,14 @@ class RunBudget:
     """Tracks how many requests a quota-limited source may make this run."""
 
     max_requests_per_run: int
-    run_days: list[str]           # e.g. ["MON", "THU"]
+    run_days: list[str]  # e.g. ["MON", "THU"]
     quota_reserve: int
-    remaining_quota: int | None = None   # from provider headers, if known
+    remaining_quota: int | None = None  # from provider headers, if known
 
     _used: int = 0
 
     def check_scheduled_today(self, now: datetime | None = None) -> None:
-        now = now or datetime.now(timezone.utc)
+        now = now or datetime.now(UTC)
         today = now.strftime("%a").upper()
         if self.run_days and today not in self.run_days:
             raise QuotaSkip(f"not scheduled today ({today} not in {self.run_days})")

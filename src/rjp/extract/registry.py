@@ -1,4 +1,5 @@
 """Per-source failure attribution (ADR-003, ADR-021)."""
+
 from __future__ import annotations
 
 import time
@@ -33,7 +34,11 @@ def extract_all_sources(extractors: list[BaseExtractor]) -> list[SourceResult]:
                 SourceResult(ex.name, SourceStatus.DEGRADED, e.jobs, e.reason.value, e.detail, duration)
             )
             logger.warning(
-                "source=%s DEGRADED reason=%s detail=%s kept=%d", ex.name, e.reason.value, e.detail, len(e.jobs)
+                "source=%s DEGRADED reason=%s detail=%s kept=%d",
+                ex.name,
+                e.reason.value,
+                e.detail,
+                len(e.jobs),
             )
 
         except ExtractionError as e:

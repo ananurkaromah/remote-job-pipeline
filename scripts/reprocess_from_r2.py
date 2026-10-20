@@ -4,6 +4,7 @@
 Usage:
     python scripts/reprocess_from_r2.py --date 2026-09-29
 """
+
 from __future__ import annotations
 
 import argparse

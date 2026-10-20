@@ -5,6 +5,7 @@ Disabled unless ENABLE_SELENIUM_SOURCES=true. Requires Chrome/ChromeDriver
 group (requirements-optional.txt). Check the portal's terms of service
 before enabling this in a scheduled run.
 """
+
 from __future__ import annotations
 
 from rjp import config

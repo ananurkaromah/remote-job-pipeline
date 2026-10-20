@@ -4,6 +4,7 @@ Connects with the `pipeline_writer` role (or the admin credential during the
 MVP phase -- see docs/deployment.md "Database roles"). Never the
 `agent_readonly` credential, which is read-only by design.
 """
+
 from __future__ import annotations
 
 import json
@@ -15,12 +16,36 @@ from rjp.utils.logging import get_logger
 logger = get_logger(__name__)
 
 _COLUMNS = [
-    "job_id", "source", "origin_portal", "external_id", "url", "is_direct_apply_url",
-    "title", "company", "company_norm", "title_norm", "description_clean", "posted_at",
-    "location_raw", "eligibility_status", "eligibility_confidence", "eligibility_evidence",
-    "timezone_hint", "role_match", "seniority_level", "min_years_required", "role_evidence",
-    "salary_status", "min_salary_usd", "max_salary_usd", "salary_period", "salary_raw",
-    "tech_stack", "completeness_score", "embedding", "embedding_text",
+    "job_id",
+    "source",
+    "origin_portal",
+    "external_id",
+    "url",
+    "is_direct_apply_url",
+    "title",
+    "company",
+    "company_norm",
+    "title_norm",
+    "description_clean",
+    "posted_at",
+    "location_raw",
+    "eligibility_status",
+    "eligibility_confidence",
+    "eligibility_evidence",
+    "timezone_hint",
+    "role_match",
+    "seniority_level",
+    "min_years_required",
+    "role_evidence",
+    "salary_status",
+    "min_salary_usd",
+    "max_salary_usd",
+    "salary_period",
+    "salary_raw",
+    "tech_stack",
+    "completeness_score",
+    "embedding",
+    "embedding_text",
 ]
 
 _UPSERT_SQL = f"""
@@ -34,6 +59,7 @@ ON CONFLICT (job_id) DO UPDATE SET
 
 def _connect():
     import psycopg2
+
     return psycopg2.connect(config.SUPABASE_DB_URL)
 
 
@@ -55,7 +81,9 @@ def load_to_supabase(jobs: list[dict[str, Any]]) -> int:
     request-size limits and timeouts.
     """
     if not jobs:
-        raise ValueError("load_to_supabase called with an empty job list; caller must guard this (see main.py)")
+        raise ValueError(
+            "load_to_supabase called with an empty job list; caller must guard this (see main.py)"
+        )
 
     conn = _connect()
     try:

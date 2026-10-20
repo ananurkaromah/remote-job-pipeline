@@ -1,4 +1,5 @@
 """Shared data structures used across extract, transform, and monitoring."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -13,8 +14,8 @@ def utcnow() -> datetime:
 
 class SourceStatus(str, Enum):
     OK = "ok"
-    SKIPPED = "skipped"      # intentional: not scheduled, below quota reserve, already done today
-    DEGRADED = "degraded"    # partial data kept after a PartialExtractionError
+    SKIPPED = "skipped"  # intentional: not scheduled, below quota reserve, already done today
+    DEGRADED = "degraded"  # partial data kept after a PartialExtractionError
     FAILED = "failed"
 
 
@@ -23,7 +24,7 @@ class SourceResult:
     source: str
     status: SourceStatus
     jobs: list[dict] = field(default_factory=list)
-    reason: str | None = None       # FailureReason value, if not OK
+    reason: str | None = None  # FailureReason value, if not OK
     detail: str = ""
     duration_s: float = 0.0
 
@@ -34,18 +35,18 @@ class SourceResult:
 
 @dataclass
 class EligibilityResult:
-    status: str            # "eligible" | "restricted" | "unknown"
-    confidence: str        # "high" | "medium" | "low"
+    status: str  # "eligible" | "restricted" | "unknown"
+    confidence: str  # "high" | "medium" | "low"
     evidence: list[str] = field(default_factory=list)
-    reason: str = ""        # short machine-readable rule name, e.g. "worldwide_structured"
+    reason: str = ""  # short machine-readable rule name, e.g. "worldwide_structured"
     timezone_hint: str | None = None
 
 
 @dataclass
 class RoleDecision:
     keep: bool
-    role_match: str | None       # "core" | "adjacent" | None
-    seniority: str                # "junior" | "mid" | "unknown" | "senior"
+    role_match: str | None  # "core" | "adjacent" | None
+    seniority: str  # "junior" | "mid" | "unknown" | "senior"
     min_years_required: int | None
     reason: str
     evidence: list[str] = field(default_factory=list)
@@ -53,10 +54,10 @@ class RoleDecision:
 
 @dataclass
 class SalaryResult:
-    status: str                   # "disclosed" | "partial" | "not_disclosed" | "unparsed"
+    status: str  # "disclosed" | "partial" | "not_disclosed" | "unparsed"
     min_usd: float | None = None
     max_usd: float | None = None
-    period: str | None = None     # "yearly" | "monthly" | "hourly"
+    period: str | None = None  # "yearly" | "monthly" | "hourly"
     raw: str | None = None
 
 
@@ -65,7 +66,7 @@ class RunSummary:
     run_id: str
     started_at: datetime = field(default_factory=utcnow)
     source_results: list[SourceResult] = field(default_factory=list)
-    dropped_counts: dict[str, int] = field(default_factory=dict)   # reason -> count
+    dropped_counts: dict[str, int] = field(default_factory=dict)  # reason -> count
     duplicates_removed: int = 0
     transform_skipped: int = 0
     transform_total: int = 0

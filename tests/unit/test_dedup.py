@@ -3,9 +3,13 @@ from rjp.transform.dedup import deduplicate, is_duplicate
 
 def _job(job_id, source, company_norm, title_norm, canonical_url="", description_clean="", **kw):
     base = {
-        "job_id": job_id, "source": source, "company_norm": company_norm,
-        "title_norm": title_norm, "canonical_url": canonical_url,
-        "description_clean": description_clean, "posted_at": None,
+        "job_id": job_id,
+        "source": source,
+        "company_norm": company_norm,
+        "title_norm": title_norm,
+        "canonical_url": canonical_url,
+        "description_clean": description_clean,
+        "posted_at": None,
     }
     base.update(kw)
     return base
@@ -27,11 +31,19 @@ def test_same_title_different_region_not_merged():
 
 def test_deduplicate_keeps_most_complete():
     desc_common = "We are looking for a data engineer to join our growing team building pipelines. "
-    a = _job("a", "jsearch", "acme", "data engineer", description_clean=desc_common, salary_status="not_disclosed")
+    a = _job(
+        "a", "jsearch", "acme", "data engineer", description_clean=desc_common, salary_status="not_disclosed"
+    )
     b = _job(
-        "b", "himalayas", "acme", "data engineer",
-        description_clean=desc_common * 20, salary_status="disclosed",
-        eligibility_status="eligible", location_raw="Worldwide", tech_stack=["Python", "SQL"],
+        "b",
+        "himalayas",
+        "acme",
+        "data engineer",
+        description_clean=desc_common * 20,
+        salary_status="disclosed",
+        eligibility_status="eligible",
+        location_raw="Worldwide",
+        tech_stack=["Python", "SQL"],
     )
     winners, losers = deduplicate([a, b])
     assert len(winners) == 1

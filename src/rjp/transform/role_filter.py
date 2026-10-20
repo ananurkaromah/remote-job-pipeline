@@ -9,6 +9,7 @@ Two independent decisions:
 Both functions are pure and side-effect free so they can be unit tested
 directly against fixture titles and descriptions.
 """
+
 from __future__ import annotations
 
 import re
@@ -23,8 +24,17 @@ from rjp.models import RoleDecision
 _RESOURCES = Path(__file__).resolve().parent.parent / "resources"
 
 _WORD_NUMBERS = {
-    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
-    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+    "zero": 0,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
 }
 
 # "2-3 years", "3+ years", "at least 3 years", "three years", etc.
@@ -81,12 +91,12 @@ def _extract_years_lower_bounds(text: str) -> list[tuple[int, str]]:
     lower_text = text.lower()
     for m in _YEARS_RE.finditer(lower_text):
         start = m.start()
-        window = lower_text[max(0, start - 20):start]
-        snippet = lower_text[max(0, start - 25):m.end() + 5].strip()
+        window = lower_text[max(0, start - 20) : start]
+        snippet = lower_text[max(0, start - 25) : m.end() + 5].strip()
 
         if any(marker in window for marker in _CEILING_MARKERS):
             continue  # a ceiling, not a minimum requirement
-        if any(marker in lower_text[m.end():m.end() + 15] for marker in _SOFT_MARKERS):
+        if any(marker in lower_text[m.end() : m.end() + 15] for marker in _SOFT_MARKERS):
             continue  # "1+ years, 3+ preferred" -> preferred is not required
 
         low_raw = m.group("low")
@@ -120,24 +130,33 @@ def classify_seniority(title: str, description: str = "") -> RoleDecision:
     for kw in patterns["senior_title_keywords"]:
         if kw.strip() in t:
             return RoleDecision(
-                keep=False, role_match=None, seniority="senior",
-                min_years_required=None, reason="dropped:senior_title",
+                keep=False,
+                role_match=None,
+                seniority="senior",
+                min_years_required=None,
+                reason="dropped:senior_title",
                 evidence=[f"title_keyword:{kw.strip()}"],
             )
 
     for kw in patterns["junior_title_keywords"]:
         if kw.strip() in t:
             return RoleDecision(
-                keep=True, role_match=None, seniority="junior",
-                min_years_required=None, reason="kept:junior_title",
+                keep=True,
+                role_match=None,
+                seniority="junior",
+                min_years_required=None,
+                reason="kept:junior_title",
                 evidence=[f"title_keyword:{kw.strip()}"],
             )
 
     bounds = _extract_years_lower_bounds(description or "")
     if not bounds:
         return RoleDecision(
-            keep=True, role_match=None, seniority="unknown",
-            min_years_required=None, reason="kept:no_years_mentioned",
+            keep=True,
+            role_match=None,
+            seniority="unknown",
+            min_years_required=None,
+            reason="kept:no_years_mentioned",
             evidence=[],
         )
 
@@ -146,15 +165,20 @@ def classify_seniority(title: str, description: str = "") -> RoleDecision:
 
     if max_lower_bound >= config.MAX_YEARS_REQUIRED_EXCLUSIVE:
         return RoleDecision(
-            keep=False, role_match=None, seniority="senior",
-            min_years_required=max_lower_bound, reason="dropped:years_ge_cutoff",
+            keep=False,
+            role_match=None,
+            seniority="senior",
+            min_years_required=max_lower_bound,
+            reason="dropped:years_ge_cutoff",
             evidence=evidence,
         )
 
     return RoleDecision(
-        keep=True, role_match=None,
+        keep=True,
+        role_match=None,
         seniority="junior" if max_lower_bound <= 1 else "mid",
-        min_years_required=max_lower_bound, reason="kept:years_below_cutoff",
+        min_years_required=max_lower_bound,
+        reason="kept:years_below_cutoff",
         evidence=evidence,
     )
 
@@ -164,8 +188,11 @@ def classify(title: str, description: str = "") -> RoleDecision:
     role_match, role_evidence = classify_role(title, description)
     if role_match is None:
         return RoleDecision(
-            keep=False, role_match=None, seniority="unknown",
-            min_years_required=None, reason="dropped:not_data_engineering_role",
+            keep=False,
+            role_match=None,
+            seniority="unknown",
+            min_years_required=None,
+            reason="dropped:not_data_engineering_role",
             evidence=role_evidence,
         )
 

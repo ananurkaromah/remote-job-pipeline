@@ -3,6 +3,7 @@
 Keyword matching uses a word boundary and a look-back window so that
 substrings like "rate" inside "Corporate" never trigger a false match.
 """
+
 from __future__ import annotations
 
 import re
@@ -32,10 +33,10 @@ _FROM_RE = re.compile(r"\b(from|starting at|minimum)\b", re.I)
 
 
 def _has_salary_context(text: str, match_start: int) -> bool:
-    window = text[max(0, match_start - _LOOKBACK_CHARS):match_start]
-    return bool(_SALARY_KEYWORDS.search(window)) or bool(_SALARY_KEYWORDS.search(
-        text[match_start:match_start + 40]
-    ))
+    window = text[max(0, match_start - _LOOKBACK_CHARS) : match_start]
+    return bool(_SALARY_KEYWORDS.search(window)) or bool(
+        _SALARY_KEYWORDS.search(text[match_start : match_start + 40])
+    )
 
 
 def _parse_number(raw: str, has_k_suffix: bool) -> float:
@@ -78,7 +79,7 @@ def parse_salary(text: str) -> SalaryResult:
         if not _has_salary_context(text, m.start()):
             continue
 
-        window = text[max(0, m.start() - 20):m.end() + 20]
+        window = text[max(0, m.start() - 20) : m.end() + 20]
         has_k = "k" in m.group(0).lower()
         try:
             low = _parse_number(m.group("low"), has_k)
@@ -104,8 +105,11 @@ def parse_salary(text: str) -> SalaryResult:
 
         if high_usd is not None:
             return SalaryResult(
-                status="disclosed", min_usd=min(low_usd, high_usd), max_usd=max(low_usd, high_usd),
-                period=period, raw=raw_snippet,
+                status="disclosed",
+                min_usd=min(low_usd, high_usd),
+                max_usd=max(low_usd, high_usd),
+                period=period,
+                raw=raw_snippet,
             )
 
         # Single bound: figure out if it's a floor ("from $60k") or a ceiling ("up to $100k")
